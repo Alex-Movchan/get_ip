@@ -72,7 +72,7 @@ void name_format(unsigned char **src, char *host)
 	int		len;
 	char	*dns = (*src);
 
-	strcat(host,".");
+	ft_strcat(host,".");
 	len = (int)ft_strlen(host);
 	for(int i = 0 ; i < len; i++)
 	{

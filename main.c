@@ -99,7 +99,7 @@ int	main(int ac, char **av)
 		return (1);
 	}
 	if (!(dns_serv = get_dns_server()))
-		dns_serv = OPEN_DNS;
+		dns_serv = ft_strdup(OPEN_DNS);
 	ft_get_host(av[1], dns_serv, T_A);
 	ft_strdel(&dns_serv);
 	return (0);

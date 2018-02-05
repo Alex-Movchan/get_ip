@@ -14,7 +14,7 @@ static u_char	*read_name(unsigned char *reader, unsigned char *buff, int *count)
 	{
 		if(*reader >= 192)
 		{
-			offset = (*reader)*256 + *(reader+1) - OFFSET; //49152 = 11000000 00000000 ;)
+			offset = (*reader)*256 + *(reader+1) - OFFSET;
 			reader = buff + offset - 1;
 			jumped = 1;
 		}
@@ -44,60 +44,6 @@ static u_char	*read_name(unsigned char *reader, unsigned char *buff, int *count)
 	return (name);
 }
 
-u_char* ReadName(unsigned char* reader,unsigned char* buffer,int* count)
-{
-	unsigned char *name;
-	unsigned int p=0,jumped=0,offset;
-	int i , j;
-
-	*count = 1;
-	name = (unsigned char*)malloc(256);
-
-	name[0]='\0';
-
-	//read the names in 3www6google3com format
-	while(*reader!=0)
-	{
-		if(*reader>=192)
-		{
-			offset = (*reader)*256 + *(reader+1) - 49152; //49152 = 11000000 00000000 ;)
-			reader = buffer + offset - 1;
-			jumped = 1; //we have jumped to another location so counting wont go up!
-		}
-		else
-		{
-			name[p++]=*reader;
-		}
-
-		reader = reader+1;
-
-		if(jumped==0)
-		{
-			*count = *count + 1; //if we havent jumped to another location then we can count up
-		}
-	}
-
-	name[p]='\0'; //string complete
-	if(jumped==1)
-	{
-		*count = *count + 1; //number of steps we actually moved forward in the packet
-	}
-
-	//now convert 3www6google3com0 to www.google.com
-	for(i=0;i<(int)strlen((const char*)name);i++)
-	{
-		p=name[i];
-		for(j=0;j<(int)p;j++)
-		{
-			name[i]=name[i+1];
-			i=i+1;
-		}
-		name[i]='.';
-	}
-	name[i-1]='\0'; //remove the last dot
-	return name;
-}
-
 static void				print_answer(struct DNS_HDR	*dns, struct RES_RECORD *answers)
 {
 	long 				*ip;
@@ -106,7 +52,7 @@ static void				print_answer(struct DNS_HDR	*dns, struct RES_RECORD *answers)
 	for(int i = 0; i < ntohs(dns->ans_count); i++)
 	{
 		ft_putstr("Name : ");
-		ft_putstr(answers->name);
+		ft_putstr(answers[i].name);
 		if( ntohs(answers[i].resource->type) == T_A)
 		{
 			ip = (long*)answers[i].rdata;
@@ -197,5 +143,6 @@ void					ft_get_host(char *host, char *dns_serc, int query_type)
 	send_recv(buf, sizeof(struct DNS_HDR) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION), dns_serc);
 	dns = (struct DNS_HDR*)buf;
 	reader = &buf[sizeof(struct DNS_HDR) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION)];
+
 	ft_parc_answer(dns, reader, buf);
 }

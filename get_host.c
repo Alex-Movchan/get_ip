@@ -122,6 +122,8 @@ static void				print_answer(struct DNS_HDR	*dns, struct RES_RECORD *answers)
 		}
 		else
 			ft_putchar('\n');
+		free(answers[i].name);
+		free(answers[i].rdata);
 	}
 }
 
@@ -133,7 +135,7 @@ static void				ft_parc_answer(struct DNS_HDR *dns, unsigned char *reader, unsign
 
 	for(int i = 0; i < ntohs(dns->ans_count); i++)
 	{
-		answers->name = read_name(reader, buf, &stop);
+		answers[i].name = read_name(reader, buf, &stop);
 		reader += stop;
 		answers[i].resource = (struct R_DATA*)(reader);
 		reader = reader + sizeof(struct R_DATA);
@@ -195,6 +197,5 @@ void					ft_get_host(char *host, char *dns_serc, int query_type)
 	send_recv(buf, sizeof(struct DNS_HDR) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION), dns_serc);
 	dns = (struct DNS_HDR*)buf;
 	reader = &buf[sizeof(struct DNS_HDR) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION)];
-
 	ft_parc_answer(dns, reader, buf);
 }

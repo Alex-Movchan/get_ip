@@ -143,6 +143,5 @@ void					ft_get_host(char *host, char *dns_serc, int query_type)
 	send_recv(buf, sizeof(struct DNS_HDR) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION), dns_serc);
 	dns = (struct DNS_HDR*)buf;
 	reader = &buf[sizeof(struct DNS_HDR) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION)];
-
 	ft_parc_answer(dns, reader, buf);
 }
